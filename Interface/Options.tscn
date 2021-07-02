@@ -1,0 +1,96 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Interface/BuildingDropDown.gd" type="Script" id=1]
+[ext_resource path="res://Interface/TraversalDropDown.gd" type="Script" id=2]
+[ext_resource path="res://Interface/Slider.gd" type="Script" id=3]
+[ext_resource path="res://Interface/GoButt.gd" type="Script" id=4]
+
+[node name="Control" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.75684
+margin_right = 4.75684
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Building" type="OptionButton" parent="."]
+anchor_left = 0.231473
+anchor_top = 0.413963
+anchor_right = 0.38284
+anchor_bottom = 0.447296
+text = "Building Algorithms"
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="Traversal" type="OptionButton" parent="."]
+anchor_left = 0.504895
+anchor_top = 0.418204
+anchor_right = 0.661145
+anchor_bottom = 0.451538
+text = "Traversal Algorithms"
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": true
+}
+
+[node name="GoButt" type="Button" parent="."]
+anchor_right = 0.012
+anchor_bottom = 0.037
+margin_left = 282.413
+margin_top = 508.803
+margin_right = 677.125
+margin_bottom = 508.603
+text = "Go!"
+script = ExtResource( 4 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HSlider" type="HSlider" parent="."]
+margin_left = 159.893
+margin_top = 396.055
+margin_right = 392.893
+margin_bottom = 412.055
+min_value = 1.0
+max_value = 10.0
+value = 1.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+label_path = NodePath("../Label")
+Text = "Horizontal Bias: "
+
+[node name="Label" type="Label" parent="."]
+margin_left = 225.752
+margin_top = 353.489
+margin_right = 321.752
+margin_bottom = 367.489
+text = "Horizontal bias: "
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VSlider" type="HSlider" parent="."]
+margin_left = 548.0
+margin_top = 395.0
+margin_right = 734.0
+margin_bottom = 419.0
+script = ExtResource( 3 )
+label_path = NodePath("../Label2")
+Text = "Vertical Bias: "
+
+[node name="Label2" type="Label" parent="."]
+margin_left = 589.473
+margin_top = 358.291
+margin_right = 668.473
+margin_bottom = 372.291
+text = "Vertical Bias"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="button_up" from="GoButt" to="GoButt" method="_on_GoButt_button_up"]
+[connection signal="value_changed" from="HSlider" to="HSlider" method="_on_HSlider_value_changed"]

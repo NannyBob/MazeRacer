@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Scenes/Player/Trail.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/TempCharacter.png" type="Texture" id=2]
+[ext_resource path="res://Scenes/Player/MovePlayer.gd" type="Script" id=3]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 13, 7 )
+
+[node name="Player" type="KinematicBody2D"]
+z_index = 1
+script = ExtResource( 3 )
+speed = 100
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 1 )
+
+[node name="Node" type="Node" parent="."]
+
+[node name="Trail" type="Line2D" parent="Node"]
+z_as_relative = false
+default_color = Color( 0, 0, 1, 0.313726 )
+script = ExtResource( 1 )
