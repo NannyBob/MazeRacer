@@ -9,6 +9,8 @@ export (float) var Horiz_bias =1
 var Empty:bool = true
 var Graph:={}
 var Indicator
+var Traversal_Algo:String = "dijkstra"
+var Generation_Algo:String
 
 func _ready():
 	Empty = false
@@ -93,7 +95,7 @@ func _unhandled_input(event):
 			get_node("PlayerTileMap/Start2").position = map_to_world(start)+cell_size/2
 			get_node("PlayerTileMap/End2").position = map_to_world(end)+cell_size/2
 			get_node("PlayerTileMap/Player").activate(Size,Graph,start,end)
-			get_node("Traverser").activate(Graph,start,end)
+			get_node("Traverser").activate(Graph,start,end,Traversal_Algo)
 
 
 

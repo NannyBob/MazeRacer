@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://Scenes/Maze/Traversal/BestFirst.gd" type="Script" id=1]
+[ext_resource path="res://Scenes/Maze/Traversal/Traverser.gd" type="Script" id=1]
 [ext_resource path="res://Scenes/Maze/Traversal/Trail.gd" type="Script" id=2]
 [ext_resource path="res://Sprites/Square.png" type="Texture" id=3]
 
@@ -35,4 +35,5 @@ script = ExtResource( 2 )
 emitting = false
 amount = 18
 process_material = SubResource( 1 )
+
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
