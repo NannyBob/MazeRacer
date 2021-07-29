@@ -1,12 +1,17 @@
 extends OptionButton
 
-var Items = {"Best-First":"res://Scenes/Maze/Traversal/BestFirst.gd"}
+
+# Declare member variables here. Examples:
+# var a = 2
+# var b = "text"
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	add_items()
-
-func add_items():
-	for i in Items.keys():
+	for i in Global.TRAVERSAL:
 		add_item(i)
 
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _process(delta):
+#	pass

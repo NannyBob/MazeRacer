@@ -22,18 +22,16 @@ Delay = 0.1
 modulate = Color( 0.0509804, 1, 0.0862745, 1 )
 texture = ExtResource( 3 )
 
-[node name="Timer" type="Timer" parent="."]
-
-[node name="Node" type="Node" parent="."]
-
-[node name="Trail" type="Line2D" parent="Node"]
-width = 28.0
-default_color = Color( 1, 0, 0, 0.309804 )
-script = ExtResource( 2 )
-
-[node name="Particles2D" type="Particles2D" parent="."]
+[node name="Particles2D" type="Particles2D" parent="Sprite"]
 emitting = false
 amount = 18
 process_material = SubResource( 1 )
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="Trail" type="Line2D" parent="."]
+width = 8.0
+default_color = Color( 1, 0, 0, 0.309804 )
+script = ExtResource( 2 )
 
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
