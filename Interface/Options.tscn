@@ -16,22 +16,28 @@ __meta__ = {
 }
 
 [node name="GoButt" type="Button" parent="."]
-anchor_right = 0.012
-anchor_bottom = 0.037
-margin_left = 282.413
-margin_top = 508.803
-margin_right = 677.125
-margin_bottom = 508.603
+anchor_left = 0.276
+anchor_top = 0.848
+anchor_right = 0.673
+anchor_bottom = 0.885
+margin_left = -0.211029
+margin_top = 0.00299072
+margin_right = 0.260986
+margin_bottom = -0.197021
 text = "Go!"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="HSlider" type="HSlider" parent="."]
-margin_left = 159.893
-margin_top = 396.055
-margin_right = 392.893
-margin_bottom = 412.055
+anchor_left = 0.156
+anchor_top = 0.66
+anchor_right = 0.384
+anchor_bottom = 0.687
+margin_left = 0.149002
+margin_top = 0.0549622
+margin_right = -0.322998
+margin_bottom = -0.14502
 min_value = 1.0
 max_value = 10.0
 value = 1.0
@@ -43,20 +49,28 @@ label_path = NodePath("../Label")
 Text = "Horizontal Bias: "
 
 [node name="Label" type="Label" parent="."]
-margin_left = 225.752
-margin_top = 353.489
-margin_right = 321.752
-margin_bottom = 367.489
+anchor_left = 0.22
+anchor_top = 0.589
+anchor_right = 0.322
+anchor_bottom = 0.612
+margin_left = 0.471985
+margin_top = 0.0889893
+margin_right = -7.97601
+margin_bottom = 0.288971
 text = "Horizontal bias: "
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VSlider" type="HSlider" parent="."]
-margin_left = 548.0
-margin_top = 395.0
-margin_right = 734.0
-margin_bottom = 419.0
+anchor_left = 0.535
+anchor_top = 0.658
+anchor_right = 0.717
+anchor_bottom = 0.698
+margin_left = 0.159973
+margin_top = 0.199982
+margin_right = -0.208008
+margin_bottom = 0.199982
 min_value = 1.0
 max_value = 10.0
 value = 1.0
@@ -68,46 +82,87 @@ label_path = NodePath("../Label2")
 Text = "Vertical Bias: "
 
 [node name="Label2" type="Label" parent="."]
-margin_left = 589.473
-margin_top = 358.291
-margin_right = 668.473
-margin_bottom = 372.291
+anchor_left = 0.576
+anchor_top = 0.597
+anchor_right = 0.653
+anchor_bottom = 0.62
+margin_left = -0.351013
+margin_top = 0.0909729
+margin_right = -0.199036
+margin_bottom = 0.290985
 text = "Vertical Bias"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="TraversalDropDown1" type="OptionButton" parent="."]
-anchor_right = 0.255
-anchor_bottom = 0.219
-margin_left = 290.713
-margin_top = 239.744
-margin_right = 58.5933
-margin_bottom = 128.344
+anchor_left = 0.284
+anchor_top = 0.4
+anchor_right = 0.445
+anchor_bottom = 0.433
+margin_left = -0.102997
+margin_top = -0.255997
+margin_right = -135.967
+margin_bottom = -0.0560303
+text = "Traversal Algorithm 1"
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Label" type="Label" parent="TraversalDropDown1"]
+anchor_top = -1.6
+anchor_bottom = -1.6
+margin_right = 40.0
+margin_bottom = 14.0
+text = "Traversal Algorithm 1"
 
 [node name="TraversalDropDown2" type="OptionButton" parent="."]
-anchor_right = 0.255
-anchor_bottom = 0.219
-margin_left = 639.947
-margin_top = 241.632
-margin_right = 407.827
-margin_bottom = 130.232
+anchor_left = 0.625
+anchor_top = 0.403
+anchor_right = 0.781
+anchor_bottom = 0.436
+margin_left = -0.0529785
+margin_top = -0.168015
+margin_right = -130.797
+margin_bottom = 0.0319824
+text = "Travesal Algorithm 2"
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Label" type="Label" parent="TraversalDropDown2"]
+anchor_top = -1.746
+anchor_bottom = -1.746
+margin_left = 0.943848
+margin_top = -0.00344467
+margin_right = 40.9438
+margin_bottom = 13.9966
+text = "Traversal Algorithm 2"
+
 [node name="BuildingDropDown" type="OptionButton" parent="."]
-margin_right = 29.0
-margin_bottom = 20.0
+anchor_left = 0.396
+anchor_top = 0.238
+anchor_right = 0.586
+anchor_bottom = 0.272
+margin_left = 0.439941
+margin_top = 0.199997
+margin_right = -0.120056
+margin_bottom = -0.199997
+text = "Maze-Building Algorithms"
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Label" type="Label" parent="BuildingDropDown"]
+anchor_top = -1.75
+anchor_bottom = -1.75
+margin_top = 3.05176e-05
+margin_right = 40.0
+margin_bottom = 14.0
+text = "Maze-building algorithms"
 
 [connection signal="button_up" from="GoButt" to="." method="_on_GoButt_button_up"]
 [connection signal="value_changed" from="HSlider" to="HSlider" method="_on_HSlider_value_changed"]
