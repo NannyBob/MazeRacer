@@ -51,7 +51,10 @@ func _input(event):
 				gen_maze_kruskal()
 			elif Global.Building_Algo == Global.BUILDING.Depth_First:
 				gen_maze_depth_first()
-		else: 
+			elif Global.Building_Algo == Global.BUILDING.Aldous_Broder:
+				gen_maze_aldous_broder()
+		else:
+			print("here2")
 			get_node("Maze").place_start_n_end(Start_Cell,End_Cell)
 			get_node("Maze2").place_start_n_end(Start_Cell,End_Cell)
 			get_node("Maze/Traverser").activate(Graph,Start_Cell,End_Cell,Global.Traversal_Algo_1)
@@ -261,6 +264,43 @@ func gen_maze_depth_first():
 			t.queue_free()
 	finished_maze()
 
+func gen_maze_aldous_broder():
+	var directions = [Vector2.UP,Vector2.RIGHT,Vector2.DOWN,Vector2.LEFT]
+	
+	var unvisited:=[]
+	for x in Global.Maze_Size.x:
+		for y in Global.Maze_Size.y:
+			unvisited.append(Vector2(x,y))
+	
+	var current:Vector2 = random_cell()
+	unvisited.erase(current)
+	
+	while not unvisited.empty():
+		var poss_dir:Array=[]
+		for i in directions:
+			var new = i + current
+			#if not within maze, skip
+			if new.x <0 or new.x >= Global.Maze_Size.x or new.y<0 or new.y >= Global.Maze_Size.y:continue
+			poss_dir.append(i)
+		var dir = poss_dir[randi()%poss_dir.size()]
+		if current+dir in unvisited:
+			Graph[current][dir] = true
+			Graph[current+dir][dir*-1] = true
+			unvisited.erase(current+dir)
+			print(unvisited.size())
+		current = current+dir
+		get_node("Maze").update_tile(current-dir,Graph[current-dir])
+		if Delay:
+			var t = Timer.new()
+			t.set_wait_time(Delay)
+			t.set_one_shot(true)
+			self.add_child(t)
+			t.start()
+			yield(t, "timeout")
+			t.queue_free()
+	get_node("Maze").update_tile(current,Graph[current])
+	finished_maze()
+
 func finished_maze():
 	var maze2 = get_node("Maze2")
 	maze2.scale = (Vector2(1,1)/Global.Maze_Size.y)*30
@@ -271,6 +311,8 @@ func finished_maze():
 		for y in Global.Maze_Size.y:
 			maze2.update_tile(Vector2(x,y),Graph[Vector2(x,y)])
 	Mazes_Built = true
+
+
 
 func random_cell():
 	return Vector2(randi()%int(Global.Maze_Size.x),randi()%int(Global.Maze_Size.y))
