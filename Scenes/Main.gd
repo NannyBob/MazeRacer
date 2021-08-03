@@ -55,6 +55,8 @@ func _input(event):
 				gen_maze_aldous_broder()
 			elif Global.Building_Algo == Global.BUILDING.Eller:
 				gen_maze_eller()
+			elif Global.Building_Algo == Global.BUILDING.Prim:
+				gen_maze_prim()
 		else:
 			print("here2")
 			get_node("Maze").place_start_n_end(Start_Cell,End_Cell)
@@ -208,6 +210,17 @@ func calc_dir(poss_dir):
 			return dirs[i]
 	return dirs
 
+func poss_dir(cell):
+	#returns all possible directions of the cell
+	var poss_dir :=[]
+	var directions = [Vector2.UP,Vector2.RIGHT,Vector2.DOWN,Vector2.LEFT]
+	for i in directions:
+		var new = i + cell
+		#if not within maze, skip
+		if new.x <0 or new.x >= Global.Maze_Size.x or new.y<0 or new.y >= Global.Maze_Size.y:continue
+		poss_dir.append(i)
+	return poss_dir
+
 func fill_dict_false_all_cells(Size:Vector2):
 	#returns dictionary filled with falses to all cells
 	var dict:={}
@@ -279,12 +292,7 @@ func gen_maze_aldous_broder():
 	unvisited.erase(current)
 	
 	while not unvisited.empty():
-		var poss_dir:Array=[]
-		for i in directions:
-			var new = i + current
-			#if not within maze, skip
-			if new.x <0 or new.x >= Global.Maze_Size.x or new.y<0 or new.y >= Global.Maze_Size.y:continue
-			poss_dir.append(i)
+		var poss_dir = poss_dir(current)
 		var dir = poss_dir[randi()%poss_dir.size()]
 		if current+dir in unvisited:
 			Graph[current][dir] = true
@@ -395,6 +403,50 @@ func gen_maze_eller():
 					yield(t, "timeout")
 					t.queue_free()
 	finished_maze()
+
+func disjoint(cell:Vector2,poss_dir:Array):
+	#checks if a cell is not connected to any others
+	for dir in poss_dir:
+		if Graph[cell][dir]:
+			return false
+	return true
+
+
+func gen_maze_prim():
+	var maze = get_node("Maze")
+	var worth_a_visit := {}
+	var current:Vector2 = random_cell()
+	var poss_dir = poss_dir(current)
+	for dir in poss_dir:
+		worth_a_visit[current+dir] = dir*-1
+	while not worth_a_visit.keys().empty():
+		current = worth_a_visit.keys()[randi()%worth_a_visit.size()]
+		var dir_to_maze = worth_a_visit[current]
+		worth_a_visit.erase(current)
+		
+		Graph[current][dir_to_maze] = true
+		Graph[current+dir_to_maze][dir_to_maze*-1]=true
+		
+		maze.update_tile(current,Graph[current])
+		maze.update_tile(current+dir_to_maze,Graph[current+dir_to_maze])
+		
+		if Delay:
+			var t = Timer.new()
+			t.set_wait_time(Delay)
+			t.set_one_shot(true)
+			self.add_child(t)
+			t.start()
+			yield(t, "timeout")
+			t.queue_free()
+		
+		
+		poss_dir = poss_dir(current)
+		for dir in poss_dir:
+			if disjoint(current+dir,poss_dir(current+dir)):
+				worth_a_visit[current+dir] = dir*-1
+	finished_maze()
+
+
 
 func finished_maze():
 	var maze2 = get_node("Maze2")
