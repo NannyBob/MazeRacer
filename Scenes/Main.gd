@@ -180,15 +180,15 @@ func gen_maze_kruskal():
 				Graph[cell2][Vector2.UP] = true
 				get_node("Maze").update_tile(cell2,Graph[cell2])
 			
-		#delay
-		if Delay:
-			var t = Timer.new()
-			t.set_wait_time(Delay)
-			t.set_one_shot(true)
-			self.add_child(t)
-			t.start()
-			yield(t, "timeout")
-			t.queue_free()
+			#delay
+			if Delay:
+				var t = Timer.new()
+				t.set_wait_time(Delay)
+				t.set_one_shot(true)
+				self.add_child(t)
+				t.start()
+				yield(t, "timeout")
+				t.queue_free()
 	finished_maze()
 
 func calc_dir(poss_dir):
