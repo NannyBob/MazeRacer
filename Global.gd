@@ -4,7 +4,7 @@ extends Node
 var Maze_Size:Vector2 = Vector2(20,20)
 var Scale:Vector2
 enum TRAVERSAL { Dijkstra,A_Star,Best_First }
-enum BUILDING {Kruskal,Depth_First,Aldous_Broder}
+enum BUILDING {Kruskal,Depth_First,Aldous_Broder,Eller}
 var Building_Algo
 var Traversal_Algo_1
 var Traversal_Algo_2

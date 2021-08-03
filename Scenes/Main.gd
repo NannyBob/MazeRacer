@@ -1,6 +1,6 @@
 extends Node2D
 
-export (float) var Delay = 0.01
+export (float) var Delay = 0.05
 var Empty_Base:bool = false
 var Graph:Dictionary ={}
 var Start_Cell:Vector2
@@ -53,6 +53,8 @@ func _input(event):
 				gen_maze_depth_first()
 			elif Global.Building_Algo == Global.BUILDING.Aldous_Broder:
 				gen_maze_aldous_broder()
+			elif Global.Building_Algo == Global.BUILDING.Eller:
+				gen_maze_eller()
 		else:
 			print("here2")
 			get_node("Maze").place_start_n_end(Start_Cell,End_Cell)
@@ -79,8 +81,9 @@ class Disjoint_Set_Forest:
 		if not elements.has(x):
 			elements[x] = x
 	
+		
 	func find(x):
-		#returns root of x, also implements path compression 
+		#returns root of x, also implements path compression
 		if elements.has(x):
 			if elements[x] == x:
 				return x
@@ -299,6 +302,98 @@ func gen_maze_aldous_broder():
 			yield(t, "timeout")
 			t.queue_free()
 	get_node("Maze").update_tile(current,Graph[current])
+	finished_maze()
+
+func gen_maze_eller():
+	#really enjoyed programming this one
+	var maze = get_node("Maze")
+	var forest :Disjoint_Set_Forest= Disjoint_Set_Forest.new()
+	for y in Global.Maze_Size.y-1:
+		for x in Global.Maze_Size.x:
+			#adds all in row to forest as unique set, won't get added if it already exists
+			forest.add_set(Vector2(x,y))
+		
+		for x in Global.Maze_Size.x-1:
+			#randomly connects adjacent cells if they do not exist in the same sets
+			if forest.find(Vector2(x,y))!=forest.find(Vector2(x+1,y)) and randi()%2==0:
+				forest.union(Vector2(x,y),Vector2(x+1,y))
+				
+				Graph[Vector2(x,y)][Vector2.RIGHT] = true
+				Graph[Vector2(x+1,y)][Vector2.LEFT] = true
+				
+				maze.update_tile(Vector2(x,y),Graph[Vector2(x,y)])
+				maze.update_tile(Vector2(x+1,y),Graph[Vector2(x+1,y)])
+				if Delay:
+					var t = Timer.new()
+					t.set_wait_time(Delay)
+					t.set_one_shot(true)
+					self.add_child(t)
+					t.start()
+					yield(t, "timeout")
+					t.queue_free()
+		
+		
+		#this section randomly creates vertical connections downward to the next row. 
+		#It makes sure each disjoint set has at least one connection downwards
+		
+		var row = range(Global.Maze_Size.x)
+		var parents:=[]
+		while not row.empty():
+			var x = row[randi()%row.size()]
+			row.erase(x)
+			var parent = forest.find(Vector2(x,y))
+			#for every new set it finds(sets that arent in parents) it always gives that cell a downward connection 
+			if not parent in parents:
+				parents.append(parent)
+				forest.add_set(Vector2(x,y+1))
+				forest.union(Vector2(x,y),Vector2(x,y+1))
+				
+				Graph[Vector2(x,y)][Vector2.DOWN] = true
+				Graph[Vector2(x,y+1)][Vector2.UP] = true
+				
+				maze.update_tile(Vector2(x,y),Graph[Vector2(x,y)])
+				maze.update_tile(Vector2(x,y+1),Graph[Vector2(x,y+1)])
+			elif randi()%4==0:
+				forest.add_set(Vector2(x,y+1))
+				forest.union(Vector2(x,y),Vector2(x,y+1))
+				
+				Graph[Vector2(x,y)][Vector2.DOWN] = true
+				Graph[Vector2(x,y+1)][Vector2.UP] = true
+				
+				maze.update_tile(Vector2(x,y),Graph[Vector2(x,y)])
+				maze.update_tile(Vector2(x,y+1),Graph[Vector2(x,y+1)])
+			
+			if Delay:
+					var t = Timer.new()
+					t.set_wait_time(Delay)
+					t.set_one_shot(true)
+					self.add_child(t)
+					t.start()
+					yield(t, "timeout")
+					t.queue_free()
+		
+	#for the last row
+	var y = Global.Maze_Size.y-1
+	forest.add_set(Vector2(0,y))
+	for x in Global.Maze_Size.x-1:
+		forest.add_set(Vector2(x+1,y))
+		# connects adjacent cells if they do not exist in the same sets
+		if forest.find(Vector2(x,y))!=forest.find(Vector2(x+1,y)):
+			forest.union(Vector2(x,y),Vector2(x+1,y))
+			
+			Graph[Vector2(x,y)][Vector2.RIGHT] = true
+			Graph[Vector2(x+1,y)][Vector2.LEFT] = true
+			
+			maze.update_tile(Vector2(x,y),Graph[Vector2(x,y)])
+			maze.update_tile(Vector2(x+1,y),Graph[Vector2(x+1,y)])
+			if Delay:
+					var t = Timer.new()
+					t.set_wait_time(Delay)
+					t.set_one_shot(true)
+					self.add_child(t)
+					t.start()
+					yield(t, "timeout")
+					t.queue_free()
 	finished_maze()
 
 func finished_maze():
