@@ -57,7 +57,7 @@ margin_left = 0.471985
 margin_top = 0.0889893
 margin_right = -7.97601
 margin_bottom = 0.288971
-text = "Horizontal bias: "
+text = "Horizontal bias: 1"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -86,11 +86,11 @@ anchor_left = 0.576
 anchor_top = 0.597
 anchor_right = 0.653
 anchor_bottom = 0.62
-margin_left = -0.351013
+margin_left = 0.592834
 margin_top = 0.0909729
-margin_right = -0.199036
+margin_right = 0.744812
 margin_bottom = 0.290985
-text = "Vertical Bias"
+text = "Vertical Bias: 1"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -165,4 +165,5 @@ margin_bottom = 14.0
 text = "Maze-building algorithms"
 
 [connection signal="button_up" from="GoButt" to="." method="_on_GoButt_button_up"]
-[connection signal="value_changed" from="HSlider" to="HSlider" method="_on_HSlider_value_changed"]
+[connection signal="value_changed" from="HSlider" to="HSlider" method="_on_value_changed"]
+[connection signal="value_changed" from="VSlider" to="VSlider" method="_on_value_changed"]
