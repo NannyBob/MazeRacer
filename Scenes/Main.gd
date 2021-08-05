@@ -452,6 +452,8 @@ func finished_maze():
 	var maze2 = get_node("Maze2")
 	maze2.scale = (Vector2(1,1)/Global.Maze_Size.y)*30
 	maze2.modulate = Color.bisque
+	maze2.get_node("CurrentTile").visible = false
+	get_node("Maze/CurrentTile").visible = false
 	maze2.visible = true
 	maze2.position= Vector2((Global.Maze_Size.x/2)*32*maze2.scale.x*2,0)
 	for x in Global.Maze_Size.x:
