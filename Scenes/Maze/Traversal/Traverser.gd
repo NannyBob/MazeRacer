@@ -14,9 +14,9 @@ func _ready():
 func find_lowest_best_first(distances:Dictionary, unvisited:Array):
 	var lowest = INF
 	var cell
-	for x in distances.keys():
+	for x in unvisited:
 		var val = x.distance_to(End)
-		if val<lowest and unvisited.has(x) and distances[x]!= INF:
+		if val<lowest and distances[x]!= INF:
 			lowest = val
 			cell = x
 	print(cell)
@@ -25,9 +25,19 @@ func find_lowest_best_first(distances:Dictionary, unvisited:Array):
 func find_lowest_dijkstra(distances:Dictionary, unvisited:Array):
 	var lowest = INF
 	var cell
-	for x in distances.keys():
+	for x in unvisited:
 		var val = distances[x]
-		if val<lowest and unvisited.has(x):
+		if val<lowest and x in unvisited:
+			lowest = val
+			cell = x
+	return cell
+
+func find_lowest_astar(distances:Dictionary,unvisited:Array):
+	var lowest = INF
+	var cell
+	for x in unvisited:
+		var val = distances[x] +x.distance_to(End)
+		if val<lowest and x in unvisited and distances[x]!= INF:
 			lowest = val
 			cell = x
 	return cell
@@ -88,8 +98,11 @@ func dijkstra(graph:Dictionary,start:Vector2,end:Vector2,algo):
 					Paths[current+dir] = current 
 		if algo == Global.TRAVERSAL.Best_First:
 			current = find_lowest_best_first(distance_from_start,unvisited)
+		elif algo == Global.TRAVERSAL.A_Star:
+			current = find_lowest_astar(distance_from_start,unvisited)
 		elif algo == Global.TRAVERSAL.Dijkstra:
 			current = find_lowest_dijkstra(distance_from_start,unvisited)
+	
 	Finished = true
 	Cell_Queue.push_front(end)
 
