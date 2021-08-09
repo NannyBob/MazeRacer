@@ -1,6 +1,6 @@
 extends Node2D
 
-export (float) var Delay = 0.05
+export (float) var Delay = 0.00
 var Empty_Base:bool = false
 var Graph:Dictionary ={}
 var Start_Cell:Vector2
@@ -58,6 +58,7 @@ func _input(event):
 			elif Global.Building_Algo == Global.BUILDING.Prim:
 				gen_maze_prim()
 		else:
+			ScreenshotQueue.snap(get_viewport())
 			print("here2")
 			get_node("Maze").place_start_n_end(Start_Cell,End_Cell)
 			get_node("Maze2").place_start_n_end(Start_Cell,End_Cell)
@@ -293,7 +294,7 @@ func gen_maze_aldous_broder():
 	
 	while not unvisited.empty():
 		var poss_dir = poss_dir(current)
-		var dir = poss_dir[randi()%poss_dir.size()]
+		var dir = calc_dir(poss_dir)
 		if current+dir in unvisited:
 			Graph[current][dir] = true
 			Graph[current+dir][dir*-1] = true
