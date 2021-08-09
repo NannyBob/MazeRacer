@@ -474,7 +474,7 @@ func gen_maze_sidewinder():
 		for x in Global.Maze_Size.x:
 			var current = Vector2(x,y)
 			
-			if (randi()%2==0 or x == Global.Maze_Size.x-1) and y>0:
+			if (randi()%(Global.Horiz_Bias+Global.Vert_Bias)<Global.Vert_Bias or x == Global.Maze_Size.x-1) and y>0:
 				var newx
 				if x==run:newx = run
 				else: newx = randi()%(x-run)+run
