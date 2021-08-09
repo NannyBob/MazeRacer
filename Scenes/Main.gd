@@ -1,6 +1,6 @@
 extends Node2D
 
-export (float) var Delay = 0.00
+export (float) var Delay = 0.05
 var Empty_Base:bool = false
 var Graph:Dictionary ={}
 var Start_Cell:Vector2
@@ -64,6 +64,7 @@ func _input(event):
 			get_node("Maze2").place_start_n_end(Start_Cell,End_Cell)
 			get_node("Maze/Traverser").activate(Graph,Start_Cell,End_Cell,Global.Traversal_Algo_1)
 			get_node("Maze2/Traverser").activate(Graph,Start_Cell,End_Cell,Global.Traversal_Algo_2)
+
 
 class Wall:
 	var coord: Vector2
@@ -415,15 +416,27 @@ func disjoint(cell:Vector2,poss_dir:Array):
 
 func gen_maze_prim():
 	var maze = get_node("Maze")
-	var worth_a_visit := {}
+	var worth_a_visit_vert := {}
+	var worth_a_visit_horiz :={}
 	var current:Vector2 = random_cell()
 	var poss_dir = poss_dir(current)
 	for dir in poss_dir:
-		worth_a_visit[current+dir] = dir*-1
-	while not worth_a_visit.keys().empty():
-		current = worth_a_visit.keys()[randi()%worth_a_visit.size()]
-		var dir_to_maze = worth_a_visit[current]
-		worth_a_visit.erase(current)
+		if dir.x ==0:
+			worth_a_visit_vert[current+dir] = dir*-1
+		else:
+			worth_a_visit_horiz[current+dir] = dir*-1
+	while not worth_a_visit_vert.keys().empty() or not worth_a_visit_horiz.keys().empty():
+		var dir_to_maze
+		if randi()%(Global.Horiz_Bias+Global.Vert_Bias) < Global.Horiz_Bias and not worth_a_visit_horiz.keys().empty():
+			current = worth_a_visit_horiz.keys()[randi()%worth_a_visit_horiz.size()]
+			dir_to_maze = worth_a_visit_horiz[current]
+		else:
+			current = worth_a_visit_vert.keys()[randi()%worth_a_visit_vert.size()]
+			dir_to_maze = worth_a_visit_vert[current]
+		
+		
+		worth_a_visit_horiz.erase(current)
+		worth_a_visit_vert.erase(current)
 		
 		Graph[current][dir_to_maze] = true
 		Graph[current+dir_to_maze][dir_to_maze*-1]=true
@@ -444,7 +457,10 @@ func gen_maze_prim():
 		poss_dir = poss_dir(current)
 		for dir in poss_dir:
 			if disjoint(current+dir,poss_dir(current+dir)):
-				worth_a_visit[current+dir] = dir*-1
+				if dir.x == 0:
+					worth_a_visit_vert[current+dir] = dir*-1
+				else:
+					worth_a_visit_horiz[current+dir] = dir*-1
 	finished_maze()
 
 
