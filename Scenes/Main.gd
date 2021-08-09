@@ -57,6 +57,8 @@ func _input(event):
 				gen_maze_eller()
 			elif Global.Building_Algo == Global.BUILDING.Prim:
 				gen_maze_prim()
+			elif Global.Building_Algo == Global.BUILDING.Sidewinder:
+				gen_maze_sidewinder()
 		else:
 			ScreenshotQueue.snap(get_viewport())
 			print("here2")
@@ -64,7 +66,10 @@ func _input(event):
 			get_node("Maze2").place_start_n_end(Start_Cell,End_Cell)
 			get_node("Maze/Traverser").activate(Graph,Start_Cell,End_Cell,Global.Traversal_Algo_1)
 			get_node("Maze2/Traverser").activate(Graph,Start_Cell,End_Cell,Global.Traversal_Algo_2)
-
+	elif event.is_action_pressed("fast"):
+		Delay-=0.001
+	elif event.is_action_pressed("slow"):
+		Delay+=0.001
 
 class Wall:
 	var coord: Vector2
@@ -463,7 +468,42 @@ func gen_maze_prim():
 					worth_a_visit_horiz[current+dir] = dir*-1
 	finished_maze()
 
-
+func gen_maze_sidewinder():
+	for y in Global.Maze_Size.y:
+		var run = 0
+		for x in Global.Maze_Size.x:
+			var current = Vector2(x,y)
+			
+			if (randi()%2==0 or x == Global.Maze_Size.x-1) and y>0:
+				var newx
+				if x==run:newx = run
+				else: newx = randi()%(x-run)+run
+				var change = Vector2(newx,y)
+				var next = change+Vector2.UP
+				Graph[change][Vector2.UP] = true
+				Graph[next][Vector2.DOWN] = true
+				get_node("Maze").update_tile(change,Graph[change])
+				get_node("Maze").update_tile(next,Graph[next])
+				run = x+1
+			elif x != Global.Maze_Size.x-1:
+				var next = current+Vector2.RIGHT
+				Graph[current][Vector2.RIGHT] = true
+				Graph[next][Vector2.LEFT] = true
+				get_node("Maze").update_tile(current,Graph[current])
+				get_node("Maze").update_tile(next,Graph[next])
+			
+			if Delay:
+				var t = Timer.new()
+				t.set_wait_time(Delay)
+				t.set_one_shot(true)
+				self.add_child(t)
+				t.start()
+				yield(t, "timeout")
+				t.queue_free()
+	
+	
+	
+	finished_maze()
 
 func finished_maze():
 	var maze2 = get_node("Maze2")
