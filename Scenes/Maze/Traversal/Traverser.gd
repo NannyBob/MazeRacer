@@ -60,7 +60,7 @@ func _on_Timer_timeout():
 			if is_shortest_path(Algo):
 				end_shortest_path()
 			else:
-				end()
+				end_success()
 	else:
 		var temp = (Cell_Queue.pop_back()+Vector2(0.5,0.5))*32
 		get_node("Sprite").position = temp
@@ -119,11 +119,11 @@ func shortest_path(graph:Dictionary,start:Vector2,end:Vector2,algo):
 	Finished = true
 	Cell_Queue.push_front(end)
 
-func end():
+func end_success():
 	get_node("Sprite/Particles2D").emitting = true
 
 func end_shortest_path():
-	end()
+	end_success()
 	var line = get_node("Trail")
 	var current :Vector2= End
 	var path:=[]
@@ -140,6 +140,7 @@ func wall_follower_dir_order(facing:Vector2):
 	return [Dirs[(i+3)%4],Dirs[i],Dirs[(i+1)%4],Dirs[(i+2)%4]]
 
 func wall_follower(graph:Dictionary,start:Vector2,end:Vector2):
+	var visited =[]
 	var facing:Vector2=Vector2.UP
 	var current:Vector2=start
 	Cell_Queue.push_front(current)
@@ -147,9 +148,12 @@ func wall_follower(graph:Dictionary,start:Vector2,end:Vector2):
 		var dir_order = wall_follower_dir_order(facing)
 		for dir in dir_order:
 			if graph[current][dir]:
+				if [current,dir] in visited:
+					print("failure")
+				else:
+					visited.append([current,dir])
 				current = current+dir
 				facing = dir
 				Cell_Queue.push_front(current)
 				break
-	print(Cell_Queue[0])
 	Finished = true
