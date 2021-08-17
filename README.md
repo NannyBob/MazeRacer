@@ -12,3 +12,6 @@ Resources I used:
 
 See it in action here:
 https://youtube.com/playlist?list=PLEiJKYo91Z2JZeR2uKEkDtYcMaOrM-a9H
+
+
+Also I'm officially coining the term double depth first. This is my legacy
