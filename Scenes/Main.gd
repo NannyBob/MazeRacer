@@ -1,11 +1,14 @@
 extends Node2D
 
-export (float) var Delay = 0.05
+export (float) var Delay = 0.005
 var Empty_Base:bool = false
 var Graph:Dictionary ={}
 var Start_Cell:Vector2
 var End_Cell:Vector2
 var Mazes_Built:bool = false
+
+#this var is for the algorithms that run twice
+var Done_Once:bool = true
 # Declare member variables here. Examples:
 # var a = 2
 # var b = "text"
@@ -50,6 +53,9 @@ func _input(event):
 			if Global.Building_Algo == Global.BUILDING.Kruskal:
 				gen_maze_kruskal()
 			elif Global.Building_Algo == Global.BUILDING.Depth_First:
+				gen_maze_depth_first()
+			elif Global.Building_Algo == Global.BUILDING.Depth_First_Twice:
+				Done_Once = false
 				gen_maze_depth_first()
 			elif Global.Building_Algo == Global.BUILDING.Aldous_Broder:
 				gen_maze_aldous_broder()
@@ -285,7 +291,11 @@ func gen_maze_depth_first():
 			t.start()
 			yield(t, "timeout")
 			t.queue_free()
-	finished_maze()
+	if not Done_Once:
+		Done_Once = true
+		gen_maze_depth_first()
+	else:
+		finished_maze()
 
 func gen_maze_aldous_broder():
 	var directions = [Vector2.UP,Vector2.RIGHT,Vector2.DOWN,Vector2.LEFT]
