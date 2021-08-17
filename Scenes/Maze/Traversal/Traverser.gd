@@ -24,7 +24,6 @@ func find_lowest_best_first(distances:Dictionary, unvisited:Array):
 		if val<lowest and distances[x]!= INF:
 			lowest = val
 			cell = x
-	print(cell)
 	return cell
 
 func find_lowest_dijkstra(distances:Dictionary, unvisited:Array):
@@ -56,7 +55,6 @@ func _on_Timer_timeout():
 	
 	if Cell_Queue.empty():
 		if Finished:
-			get_node("Timer").stop()
 			if is_shortest_path(Algo):
 				end_shortest_path()
 			else:
@@ -77,6 +75,8 @@ func activate(graph:Dictionary,start:Vector2,end:Vector2, algo):
 		shortest_path(graph,start,end,algo)
 	elif algo == Global.TRAVERSAL.Wall_Follower:
 		wall_follower(graph,start,end)
+	elif algo == Global.TRAVERSAL.Pledge:
+		pledge(graph,start,end)
 
 
 func shortest_path(graph:Dictionary,start:Vector2,end:Vector2,algo):
@@ -120,7 +120,14 @@ func shortest_path(graph:Dictionary,start:Vector2,end:Vector2,algo):
 	Cell_Queue.push_front(end)
 
 func end_success():
+	end()
 	get_node("Sprite/Particles2D").emitting = true
+
+func end():
+	get_node("Timer").stop()
+
+func failure():
+	Cell_Queue.append_array(Cell_Queue)
 
 func end_shortest_path():
 	end_success()
@@ -139,21 +146,57 @@ func wall_follower_dir_order(facing:Vector2):
 	var i = Dirs.find(facing)
 	return [Dirs[(i+3)%4],Dirs[i],Dirs[(i+1)%4],Dirs[(i+2)%4]]
 
+func wall_follower_find_left_wall(current:Vector2,graph:Dictionary):
+	#looks in all 4 dirs to find the closest wall, returns a cell next to that wall
+	var counter = 0
+	while true:
+		counter +=1
+		var left = Vector2.LEFT
+		if not graph[current+(left*(counter-1))][left]:
+			return current+(left*(counter-1))
+
 func wall_follower(graph:Dictionary,start:Vector2,end:Vector2):
 	var visited =[]
 	var facing:Vector2=Vector2.UP
 	var current:Vector2=start
 	Cell_Queue.push_front(current)
+	
+	var wall_adjacent = wall_follower_find_left_wall(current,graph)
+	while current != wall_adjacent:
+		current += Vector2.LEFT
+		Cell_Queue.append(current)
+	
 	while current != end:
 		var dir_order = wall_follower_dir_order(facing)
 		for dir in dir_order:
 			if graph[current][dir]:
 				if [current,dir] in visited:
-					print("failure")
+					failure()
+					return
 				else:
 					visited.append([current,dir])
 				current = current+dir
 				facing = dir
 				Cell_Queue.push_front(current)
 				break
+	Finished = true
+
+
+func pledge(graph:Dictionary,start:Vector2,end:Vector2):
+	var mainDir = Dirs[randi()%Dirs.size()]
+	var current = start
+	var facing:Vector2=Vector2.UP
+	while current!=end:
+		if graph[current][mainDir]:
+			current = mainDir+current
+			facing = mainDir
+			Cell_Queue.push_front(current)
+		else:
+			var dir_order = wall_follower_dir_order(facing)
+			for dir in dir_order:
+				if graph[current][dir]:
+					current = current+dir
+					facing = dir
+					Cell_Queue.push_front(current)
+					break
 	Finished = true
