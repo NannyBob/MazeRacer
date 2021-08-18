@@ -1,10 +1,8 @@
 extends Node2D
-export(float) var Delay = 0
-var Cell_Queue = []
+export(float) var Delay = 0.05
 var Shortest_Paths:={}
 var Start
 var End
-var Finished:bool = false
 var Algo
 var Dirs = [Vector2.UP,Vector2.RIGHT,Vector2.DOWN,Vector2.LEFT]
 
@@ -48,26 +46,13 @@ func find_lowest_astar(distances:Dictionary,unvisited:Array):
 	return cell
 
 
-func _on_Timer_timeout():
-	#if cell queue is empty, then the end has been reached
-	#otherwise it takes the traverser to the pos at the front of the queue
-	#and updates the trail
-	
-	if Cell_Queue.empty():
-		if Finished:
-			if is_shortest_path(Algo):
-				end_shortest_path()
-			else:
-				end_success()
-	else:
-		var temp = (Cell_Queue.pop_back()+Vector2(0.5,0.5))*32
-		get_node("Sprite").position = temp
-		get_node("Trail").add_point(temp)
-	
+func move(cell:Vector2):
+	var temp = (cell+Vector2(0.5,0.5))*32
+	get_node("Sprite").position = temp
+	get_node("Trail").add_point(temp)
 
 func activate(graph:Dictionary,start:Vector2,end:Vector2, algo):
 	Algo = algo
-	get_node("Timer").start(Delay)
 	Start = start
 	End = end
 	visible = true
@@ -77,6 +62,8 @@ func activate(graph:Dictionary,start:Vector2,end:Vector2, algo):
 		wall_follower(graph,start,end)
 	elif algo == Global.TRAVERSAL.Pledge:
 		pledge(graph,start,end)
+#	elif algo == Global.TRAVERSAL.Random_Route:
+#		random_route(graph,start,end)
 
 
 func shortest_path(graph:Dictionary,start:Vector2,end:Vector2,algo):
@@ -99,7 +86,7 @@ func shortest_path(graph:Dictionary,start:Vector2,end:Vector2,algo):
 	distance_from_start[current] = 0
 	
 	while current != end:
-		Cell_Queue.push_front(current)
+		move(current)
 		unvisited.erase(current)
 		
 		#if there is no wall in a direction, it adds that to the distance_from_start
@@ -115,16 +102,25 @@ func shortest_path(graph:Dictionary,start:Vector2,end:Vector2,algo):
 			current = find_lowest_astar(distance_from_start,unvisited)
 		elif algo == Global.TRAVERSAL.Dijkstra:
 			current = find_lowest_dijkstra(distance_from_start,unvisited)
-	
-	Finished = true
-	Cell_Queue.push_front(end)
+		
+		if Delay:
+			var t = Timer.new()
+			t.set_wait_time(Delay)
+			t.set_one_shot(true)
+			self.add_child(t)
+			t.start()
+			yield(t, "timeout")
+			t.queue_free()
+		
+	move(end)
+	end_shortest_path()
 
 func end_success():
 	end()
 	get_node("Sprite/Particles2D").emitting = true
 
 func end():
-	get_node("Timer").stop()
+	pass
 
 func end_shortest_path():
 	end_success()
@@ -156,27 +152,34 @@ func wall_follower(graph:Dictionary,start:Vector2,end:Vector2):
 	var visited =[]
 	var facing:Vector2=Vector2.UP
 	var current:Vector2=start
-	Cell_Queue.push_front(current)
+	move(current)
 	
 	var wall_adjacent = wall_follower_find_left_wall(current,graph)
 	while current != wall_adjacent:
 		current += Vector2.LEFT
-		Cell_Queue.push_front(current)
+		move(current)
 	
 	while current != end:
 		var dir_order = wall_follower_dir_order(facing)
 		for dir in dir_order:
 			if graph[current][dir]:
 				if [current,dir] in visited:
-					Cell_Queue.append_array(Cell_Queue)
 					return
 				else:
 					visited.append([current,dir])
 				current = current+dir
 				facing = dir
-				Cell_Queue.push_front(current)
+				move(current)
 				break
-	Finished = true
+		if Delay:
+			var t = Timer.new()
+			t.set_wait_time(Delay)
+			t.set_one_shot(true)
+			self.add_child(t)
+			t.start()
+			yield(t, "timeout")
+			t.queue_free()
+	end_success()
 
 
 func pledge(graph:Dictionary,start:Vector2,end:Vector2):
@@ -186,19 +189,19 @@ func pledge(graph:Dictionary,start:Vector2,end:Vector2):
 	var current = start
 	var facing:Vector2=Vector2.UP
 	var turns = 0
-	Cell_Queue.push_front(current)
+	move(current)
 	
 	var wall_adjacent = wall_follower_find_left_wall(current,graph)
 	while current != wall_adjacent:
 		current += Vector2.LEFT
-		Cell_Queue.push_front(current)
+		move(current)
 	
 	
 	while current!=end:
 		if turns == 0 and graph[current][mainDir]:
 			current = mainDir+current
 			facing = mainDir
-			Cell_Queue.push_front(current)
+			move(current)
 			visited.append([current,mainDir])
 		else:
 			var i = Dirs.find(facing)
@@ -208,14 +211,22 @@ func pledge(graph:Dictionary,start:Vector2,end:Vector2):
 			for dir in dir_order:
 				if graph[current][dir[0]]:
 					if [current,dir] in visited:
-						Cell_Queue.append_array(Cell_Queue)
 						return
 					else:
 						visited.append([current,dir[0]])
 					current = current+dir[0]
 					facing = dir[0]
 					turns +=dir[1]
-					Cell_Queue.push_front(current)
+					move(current)
 					break
-		print(turns)
-	Finished = true
+		if Delay:
+			var t = Timer.new()
+			t.set_wait_time(Delay)
+			t.set_one_shot(true)
+			self.add_child(t)
+			t.start()
+			yield(t, "timeout")
+			t.queue_free()
+	end_success()
+
+

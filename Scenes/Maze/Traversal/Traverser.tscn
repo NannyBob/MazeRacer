@@ -27,11 +27,7 @@ emitting = false
 amount = 18
 process_material = SubResource( 1 )
 
-[node name="Timer" type="Timer" parent="."]
-
 [node name="Trail" type="Line2D" parent="."]
 width = 8.0
 default_color = Color( 1, 0, 0, 0.309804 )
 script = ExtResource( 2 )
-
-[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
