@@ -1,5 +1,5 @@
 extends Node2D
-export(float) var Delay = 0.5
+export(float) var Delay = 0
 var Cell_Queue = []
 var Shortest_Paths:={}
 var Start
@@ -126,9 +126,6 @@ func end_success():
 func end():
 	get_node("Timer").stop()
 
-func failure():
-	Cell_Queue.append_array(Cell_Queue)
-
 func end_shortest_path():
 	end_success()
 	var line = get_node("Trail")
@@ -164,14 +161,14 @@ func wall_follower(graph:Dictionary,start:Vector2,end:Vector2):
 	var wall_adjacent = wall_follower_find_left_wall(current,graph)
 	while current != wall_adjacent:
 		current += Vector2.LEFT
-		Cell_Queue.append(current)
+		Cell_Queue.push_front(current)
 	
 	while current != end:
 		var dir_order = wall_follower_dir_order(facing)
 		for dir in dir_order:
 			if graph[current][dir]:
 				if [current,dir] in visited:
-					failure()
+					Cell_Queue.append_array(Cell_Queue)
 					return
 				else:
 					visited.append([current,dir])
@@ -183,20 +180,42 @@ func wall_follower(graph:Dictionary,start:Vector2,end:Vector2):
 
 
 func pledge(graph:Dictionary,start:Vector2,end:Vector2):
+	#something seems wrong about this, but I don't know what
+	var visited =[]
 	var mainDir = Dirs[randi()%Dirs.size()]
 	var current = start
 	var facing:Vector2=Vector2.UP
+	var turns = 0
+	Cell_Queue.push_front(current)
+	
+	var wall_adjacent = wall_follower_find_left_wall(current,graph)
+	while current != wall_adjacent:
+		current += Vector2.LEFT
+		Cell_Queue.push_front(current)
+	
+	
 	while current!=end:
-		if graph[current][mainDir]:
+		if turns == 0 and graph[current][mainDir]:
 			current = mainDir+current
 			facing = mainDir
 			Cell_Queue.push_front(current)
+			visited.append([current,mainDir])
 		else:
-			var dir_order = wall_follower_dir_order(facing)
+			var i = Dirs.find(facing)
+			
+			#contains a direction, then a value to add to turns
+			var dir_order = [[Dirs[(i+3)%4],-1],[Dirs[i],0],[Dirs[(i+1)%4],1],[Dirs[(i+2)%4],2]]
 			for dir in dir_order:
-				if graph[current][dir]:
-					current = current+dir
-					facing = dir
+				if graph[current][dir[0]]:
+					if [current,dir] in visited:
+						Cell_Queue.append_array(Cell_Queue)
+						return
+					else:
+						visited.append([current,dir[0]])
+					current = current+dir[0]
+					facing = dir[0]
+					turns +=dir[1]
 					Cell_Queue.push_front(current)
 					break
+		print(turns)
 	Finished = true
