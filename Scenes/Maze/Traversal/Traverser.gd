@@ -62,8 +62,8 @@ func activate(graph:Dictionary,start:Vector2,end:Vector2, algo):
 		wall_follower(graph,start,end)
 	elif algo == Global.TRAVERSAL.Pledge:
 		pledge(graph,start,end)
-#	elif algo == Global.TRAVERSAL.Random_Route:
-#		random_route(graph,start,end)
+	elif algo == Global.TRAVERSAL.Random_Route:
+		random_route(graph,start,end)
 
 
 func shortest_path(graph:Dictionary,start:Vector2,end:Vector2,algo):
@@ -229,4 +229,41 @@ func pledge(graph:Dictionary,start:Vector2,end:Vector2):
 			t.queue_free()
 	end_success()
 
+func open_paths(graph:Dictionary,current:Vector2):
+	var poss_dirs=[]
+	for dir in Dirs:
+		if graph[current][dir]:
+			poss_dirs.append(dir)
+	return poss_dirs
 
+func random_route(graph:Dictionary,start:Vector2,end:Vector2):
+	#tbf it's not fully random, always avoid going backwards
+	var current = start
+	var facing:Vector2
+	move(current)
+	while current!=end:
+		var openPaths = open_paths(graph,current)
+		openPaths.shuffle()
+		print (openPaths)
+		#if dead end
+		if openPaths.size()==1:
+			current += openPaths[0]
+			facing = openPaths[0]
+		else:
+			for dir in openPaths:
+				if facing.dot(dir)<0:
+					continue
+				current += dir
+				facing = dir
+				break
+		move(current)
+		if Delay:
+			var t = Timer.new()
+			t.set_wait_time(Delay)
+			t.set_one_shot(true)
+			self.add_child(t)
+			t.start()
+			yield(t, "timeout")
+			t.queue_free()
+		
+	end_success()
